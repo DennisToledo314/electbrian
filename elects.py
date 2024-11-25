@@ -15,6 +15,8 @@ class PointElectrode:
             self.dictionary_of_lengths = {}
             if node_length is None or internode_length is None or paranode_length is None:
                 raise TypeError("Please initialize a value for node length, paranode length, and internode length")
+            if origin > morphology.total_compartments or origin < 0:
+                raise ValueError("Such a compartment does not exist in the morphology")
             for j in np.arange(0, morphology.total_compartments, 1):
                 if j % 4 == 0:
                     self.dictionary_of_lengths[j] = node_length
