@@ -43,15 +43,15 @@ class PointElectrode:
         self.elect_dist = np.sqrt((self.rx ** 2) + (self.ry ** 2) + (self.rz ** 2))
         return self.elect_dist
 
-    def v_waveform(self):
+    def v_waveform(self, time_step):
         self.elect_mem_dist()
         if self.duty_cycle is None:
-            self.apply_mem_voltage = ((self.current_amp * np.sin(2 * np.pi * self.frequency * defaultclock.dt)) /
+            self.apply_mem_voltage = ((self.current_amp * np.sin(2 * np.pi * self.frequency * time_step)) /
                                       (4 * np.pi * self.elect_dist * self.sigma_ex))
         else:
-            self.apply_mem_voltage = ((self.current_amp * square(2 * np.pi * ((0.5 * defaultclock.dt) / self.pw),
-                                                                 self.duty_cycle)) / (
-                                              4 * np.pi * self.elect_dist * self.sigma_ex))
+            self.apply_mem_voltage = ((self.current_amp * square(2 * np.pi * ((0.5 * time_step) / self.pw),
+                                                                 self.duty_cycle)) / (4 * np.pi * self.elect_dist *
+                                                                                      self.sigma_ex))
         return self.apply_mem_voltage
 
     def origin_to_mid(self, change, target_comp, target_len, morphology):
@@ -67,20 +67,20 @@ class PointElectrode:
     def v_morph(self, node_length, paranode_length, internode_length, end, change, morphology):
         v_applied = {}
         self.ry = 0 * meter
-        v_applied[self.origin] = self.v_waveform()
+        v_applied[self.origin] = self.v_waveform(defaultclock.dt)
         for j in np.arange(self.origin + change, end, change):
             if j % 4 == 0:
                 self.ry = self.origin_to_mid(change, j, node_length, morphology)
-                v_applied[j] = self.v_waveform()
+                v_applied[j] = self.v_waveform(defaultclock.dt)
             elif j % 4 == 1 and j % 2 == 1:
                 self.ry = self.origin_to_mid(change, j, paranode_length, morphology)
-                v_applied[j] = self.v_waveform()
+                v_applied[j] = self.v_waveform(defaultclock.dt)
             elif j % 4 != 1 and j % 2 == 1:
                 self.ry = self.origin_to_mid(change, j, paranode_length, morphology)
-                v_applied[j] = self.v_waveform()
+                v_applied[j] = self.v_waveform(defaultclock.dt)
             else:
                 self.ry = self.origin_to_mid(change, j, internode_length, morphology)
-                v_applied[j] = self.v_waveform()
+                v_applied[j] = self.v_waveform(defaultclock.dt)
         return v_applied
 
     def v_applied_spatial(self, node_length, paranode_length, internode_length, morphology):
