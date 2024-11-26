@@ -38,6 +38,8 @@ class PointElectrode:
             self.frequency, self.pw, self.duty_cycle = None, pulse_width, duty_cycle
             if pulse_width <= 0:
                 raise ValueError("The pulse width should be greater than zero")
+            if duty_cycle < 0 or duty_cycle > 1:
+                raise ValueError("Duty cycle must be between 0 and 1")
 
     def elect_mem_dist(self):
         self.elect_dist = np.sqrt((self.rx ** 2) + (self.ry ** 2) + (self.rz ** 2))

@@ -15,7 +15,6 @@ def axon_morpho() -> Morphology:
     return axon_morpho
 
 
-
 def test_init_exceptions(axon_morpho) -> None:
     with pytest.raises(ValueError):
         PointElectrode(current_amp=-11 * uA, frequency=0, rx=1000 * umeter,
@@ -44,6 +43,16 @@ def test_init_exceptions(axon_morpho) -> None:
         PointElectrode(current_amp=-11 * uA, rx=-1000 * umeter, ry=1000 * umeter, rz=-500 * umeter,
                        pulse_width=0.3 * ms, sine_wave=False, sigma_ex=0.2 * siemens / meter, duty_cycle=0.5,
                        origin=6, morphology=axon_morpho, node_length=1 * um, internode_length=110 * um,
+                       paranode_length=3 * um)
+    with pytest.raises(ValueError):
+        PointElectrode(current_amp=-11 * uA, rx=-1000 * umeter, ry=1000 * umeter, rz=-500 * umeter,
+                       pulse_width=0.3 * ms, sine_wave=False, sigma_ex=0.2 * siemens / meter, duty_cycle=-0.5,
+                       origin=1, morphology=axon_morpho, node_length=1 * um, internode_length=110 * um,
+                       paranode_length=3 * um)
+    with pytest.raises(ValueError):
+        PointElectrode(current_amp=-11 * uA, rx=-1000 * umeter, ry=1000 * umeter, rz=-500 * umeter,
+                       pulse_width=0.3 * ms, sine_wave=False, sigma_ex=0.2 * siemens / meter, duty_cycle=2,
+                       origin=1, morphology=axon_morpho, node_length=1 * um, internode_length=110 * um,
                        paranode_length=3 * um)
 
 
