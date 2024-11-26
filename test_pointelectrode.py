@@ -68,18 +68,23 @@ def test_init_exceptions(axon_morpho) -> None:
                        origin=1, morphology=axon_morpho, node_length=1 * um, internode_length=110 * um,
                        paranode_length=3 * um)
 
+def test_elect_mem_distance(sine_elect: PointElectrode, pulse_elect: PointElectrode) -> None:
+    assert sine_elect.elect_mem_dist() == 1500 * umeter
+    assert pulse_elect.elect_mem_dist() == 1500 * umeter
+
+
 def test_v_waveform(sine_elect: PointElectrode, pulse_elect: PointElectrode) -> None:
     t = np.arange(0, 3.1e-3, 1e-4) * second
 
     sine_actual = sine_elect.v_waveform(t)
-    sine_desired = ((-11 * uA * sin(2 * np.pi * sine_elect.frequency * t)) /
-                    (4 * np.pi * sine_elect.elect_mem_dist() * 0.2 * siemens / meter))
+    sine_desired = ((sine_elect.current_amp * sin(2 * np.pi * sine_elect.frequency * t)) /
+                    (4 * np.pi * sine_elect.elect_mem_dist() * sine_elect.sigma_ex))
 
     pulse_actual = pulse_elect.v_waveform(t)
-    pulse_desired = ((pulse_elect.current_amp * square(2 * np.pi * ((0.5 * t) / pulse_elect.pw),
-                                                                 pulse_elect.duty_cycle)) / (4 * np.pi *
-                                                                                             pulse_elect.elect_dist *
-                                                                                             pulse_elect.sigma_ex))
+    pulse_desired = ((pulse_elect.current_amp * square(2 * np.pi * ((pulse_elect.duty_cycle * t) / pulse_elect.pw),
+                                                       pulse_elect.duty_cycle)) / (4 * np.pi *
+                                                                                   pulse_elect.elect_mem_dist() *
+                                                                                   pulse_elect.sigma_ex))
     assert_array_equal(sine_actual, sine_desired)
     assert_array_equal(pulse_actual, pulse_desired)
 
