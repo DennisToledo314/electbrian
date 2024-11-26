@@ -1,6 +1,19 @@
 import pytest
 from elects import PointElectrode
 from brian2 import *
+from numpy.testing import assert_array_equal, assert_allclose
+from scipy.signal import square
+
+@pytest.fixture
+def sine_elect(axon_morpho: Morphology) -> PointElectrode:
+    return PointElectrode(current_amp=-11 * uA, frequency=200 * Hz, rx=1000 * um, ry=1000 * um, rz=500 * um,
+                          sigma_ex=0.2 * siemens / meter)
+
+
+@pytest.fixture
+def pulse_elect(axon_morpho: Morphology) -> PointElectrode:
+    return PointElectrode(current_amp=-11 * uA, rx=-1000 * umeter, ry=1000 * umeter, rz=-500 * umeter,
+                          pulse_width=0.3 * ms, sine_wave=False, sigma_ex=0.2 * siemens / meter, duty_cycle=0.5)
 
 @pytest.fixture
 def axon_morpho() -> Morphology:
@@ -54,6 +67,21 @@ def test_init_exceptions(axon_morpho) -> None:
                        pulse_width=0.3 * ms, sine_wave=False, sigma_ex=0.2 * siemens / meter, duty_cycle=2,
                        origin=1, morphology=axon_morpho, node_length=1 * um, internode_length=110 * um,
                        paranode_length=3 * um)
+
+def test_v_waveform(sine_elect: PointElectrode, pulse_elect: PointElectrode) -> None:
+    t = np.arange(0, 3.1e-3, 1e-4) * second
+
+    sine_actual = sine_elect.v_waveform(t)
+    sine_desired = ((-11 * uA * sin(2 * np.pi * sine_elect.frequency * t)) /
+                    (4 * np.pi * sine_elect.elect_mem_dist() * 0.2 * siemens / meter))
+
+    pulse_actual = pulse_elect.v_waveform(t)
+    pulse_desired = ((pulse_elect.current_amp * square(2 * np.pi * ((0.5 * t) / pulse_elect.pw),
+                                                                 pulse_elect.duty_cycle)) / (4 * np.pi *
+                                                                                             pulse_elect.elect_dist *
+                                                                                             pulse_elect.sigma_ex))
+    assert_array_equal(sine_actual, sine_desired)
+    assert_array_equal(pulse_actual, pulse_desired)
 
 
 
