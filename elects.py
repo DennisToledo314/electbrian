@@ -66,7 +66,7 @@ class PointElectrode:
         self.ry = or_distance
         return self.ry
 
-    def v_morph(self, node_length, paranode_length, internode_length, end, change, morphology):
+    def v_morpho(self, node_length, paranode_length, internode_length, end, change, morphology):
         v_applied = {}
         self.ry = 0 * meter
         v_applied[self.origin] = self.v_waveform(defaultclock.dt)
@@ -88,15 +88,15 @@ class PointElectrode:
     def v_applied_spatial(self, node_length, paranode_length, internode_length, morphology):
         self.v_applied = {}
         if self.origin < morphology.total_compartments:
-            self.v_applied = self.v_morph(node_length, paranode_length, internode_length, -1, -1, morphology)
-            v_applied_compartment1 = self.v_morph(node_length, paranode_length, internode_length,
-                                                  morphology.total_compartments, 1, morphology)
+            self.v_applied = self.v_morpho(node_length, paranode_length, internode_length, -1, -1, morphology)
+            v_applied_compartment1 = self.v_morpho(node_length, paranode_length, internode_length,
+                                                   morphology.total_compartments, 1, morphology)
             self.v_applied.update(v_applied_compartment1)
         elif self.origin == 0:
-            self.v_applied = self.v_morph(node_length, paranode_length, internode_length, morphology.total_compartments,
-                                          1, morphology)
+            self.v_applied = self.v_morpho(node_length, paranode_length, internode_length,
+                                           morphology.total_compartments, 1, morphology)
         else:
-            self.v_applied = self.v_morph(node_length, paranode_length, internode_length, -1, -1, morphology)
+            self.v_applied = self.v_morpho(node_length, paranode_length, internode_length, -1, -1, morphology)
         return self.v_applied
 
     def i_applied_spatial(self, node_length, paranode_length, internode_length, node_diam, internode_diam, axial_rho,
