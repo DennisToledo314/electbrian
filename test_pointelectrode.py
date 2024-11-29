@@ -5,15 +5,21 @@ from numpy.testing import assert_array_equal, assert_allclose
 from scipy.signal import square
 
 @pytest.fixture
-def sine_elect(axon_morpho: Morphology) -> PointElectrode:
+def sine_elect() -> PointElectrode:
     return PointElectrode(current_amp=-11 * uA, frequency=200 * Hz, rx=1000 * um, ry=1000 * um, rz=500 * um,
                           sigma_ex=0.2 * siemens / meter)
 
 
 @pytest.fixture
-def pulse_elect(axon_morpho: Morphology) -> PointElectrode:
+def pulse_elect() -> PointElectrode:
     return PointElectrode(current_amp=-11 * uA, rx=-1000 * umeter, ry=1000 * umeter, rz=-500 * umeter,
                           pulse_width=0.3 * ms, sine_wave=False, sigma_ex=0.2 * siemens / meter, duty_cycle=0.5)
+
+@pytest.fixture
+def elect_for_testing (axon_morpho: Morphology) -> PointElectrode:
+    return PointElectrode(current_amp=-11 * uA, frequency=200 * Hz, rx=1000 * um, ry=1000 * um, rz=500 * um,
+                          sigma_ex=0.2 * siemens / meter, origin=2, morphology=axon_morpho, node_length=1 * um,
+                          internode_length=110 * um, paranode_length=3 * um)
 
 @pytest.fixture
 def axon_morpho() -> Morphology:
@@ -87,6 +93,24 @@ def test_v_waveform(sine_elect: PointElectrode, pulse_elect: PointElectrode) -> 
                                                                                    pulse_elect.sigma_ex))
     assert_array_equal(sine_actual, sine_desired)
     assert_array_equal(pulse_actual, pulse_desired)
+
+
+def test_origin_to_mid(elect_for_testing: PointElectrode, axon_morpho: Morphology) -> None:
+    internode_length, paranode_length, node_length = 110 * um, 3 * um, 1 * um
+
+    assert_allclose(elect_for_testing.origin_to_mid(-1, 1, paranode_length, axon_morpho),
+                    (0.5 * (paranode_length + internode_length)))
+    assert_allclose(elect_for_testing.origin_to_mid(1, 3, paranode_length, axon_morpho),
+                    (0.5 * (paranode_length + internode_length)))
+
+    assert_allclose(elect_for_testing.origin_to_mid(-1, 0, node_length, axon_morpho),
+                    (0.5 * (2 * paranode_length + internode_length + node_length)))
+    assert_allclose(elect_for_testing.origin_to_mid(1, 4, node_length, axon_morpho),
+                    (0.5 * (2 * paranode_length + internode_length + node_length)))
+
+    assert_allclose(elect_for_testing.origin_to_mid(1, 5, paranode_length, axon_morpho),
+                    (0.5 * (2 * paranode_length + internode_length + node_length)))
+
 
 
 
