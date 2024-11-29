@@ -108,8 +108,19 @@ def test_origin_to_mid(elect_for_testing: PointElectrode, axon_morpho: Morpholog
     assert_allclose(elect_for_testing.origin_to_mid(1, 4, node_length, axon_morpho),
                     (0.5 * (2 * paranode_length + internode_length + node_length)))
 
-    assert_allclose(elect_for_testing.origin_to_mid(1, 5, paranode_length, axon_morpho),
-                    (0.5 * (2 * paranode_length + internode_length + node_length)))
+    with pytest.raises(ValueError):
+        elect_for_testing.origin_to_mid(1, 5, paranode_length, axon_morpho)
+
+    with pytest.raises(ValueError):
+        elect_for_testing.origin_to_mid(-1, -1, paranode_length, axon_morpho)
+
+    with pytest.raises(ValueError):
+        elect_for_testing.origin_to_mid(2, 4, node_length, axon_morpho)
+
+    with pytest.raises(ValueError):
+        elect_for_testing.origin_to_mid(-2, 4, node_length, axon_morpho)
+
+
 
 def test_v_morpho(elect_for_testing: PointElectrode, axon_morpho: Morphology) -> None:
     internode_length, paranode_length, node_length = 110 * um, 3 * um, 1 * um

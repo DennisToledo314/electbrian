@@ -57,6 +57,10 @@ class PointElectrode:
         return self.apply_mem_voltage
 
     def origin_to_mid(self, change, target_comp, target_len, morphology):
+        if target_comp > morphology.total_compartments - 1 or target_comp < 0:
+            raise ValueError ("The selected compartment is not in the morphology")
+        if change > 1 or change < -1:
+            raise ValueError("The only allowable values are 1 or -1")
         k, or_distance = self.origin, 0 * umeter
         while 1 <= k < morphology.total_compartments - 1:
             or_distance = or_distance + 0.5 * (self.dictionary_of_lengths[k] + self.dictionary_of_lengths[k + change])
