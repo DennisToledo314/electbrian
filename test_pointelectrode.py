@@ -130,5 +130,20 @@ def test_v_morpho(elect_for_testing: PointElectrode, axon_morpho: Morphology) ->
     assert v_actual[1] == v_actual[3]
     assert v_actual[0] == v_actual[4]
 
+def test_v_applied_spatial(elect_for_testing: PointElectrode, axon_morpho: Morphology) -> None:
+    internode_length, paranode_length, node_length = 110 * um, 3 * um, 1 * um
+    v_actual = elect_for_testing.v_applied_spatial(node_length, paranode_length, internode_length, axon_morpho)
+    assert v_actual[1] == v_actual[3]
+    assert v_actual[0] == v_actual[4]
+
+    elect_for_testing.origin = 4
+    v_test1 = elect_for_testing.v_applied_spatial(node_length, paranode_length, internode_length, axon_morpho)
+
+    elect_for_testing.origin = 0
+    v_test2 = elect_for_testing.v_applied_spatial(node_length, paranode_length, internode_length, axon_morpho)
+
+    assert v_test1[0] == v_test2[4]
+    assert v_test1[1] == v_test2[3]
+    assert v_test1[2] == v_test2[2]
 
 
