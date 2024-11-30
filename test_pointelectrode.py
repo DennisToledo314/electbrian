@@ -203,7 +203,10 @@ def test_i_applied_spatial() -> None:
     run(10 * ms, report='text')
     assert abs(myelinated.i_appl[0]) == abs(myelinated.i_appl[12])
     assert abs(myelinated.i_appl[5]) == abs(myelinated.i_appl[7])
+    assert abs(myelinated.i_appl[3]) == abs(myelinated.i_appl[9])
+    assert abs(myelinated.i_appl[1]) == abs(myelinated.i_appl[11])
     assert myelinated.i_appl[4] == myelinated.i_appl[8]
+    assert myelinated.i_appl[2] == myelinated.i_appl[10]
 
 
 

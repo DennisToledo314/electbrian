@@ -126,4 +126,5 @@ class PointElectrode:
                 spatial_neuron[j].i_appl = (g_internode * (self.v_applied[j - 1] - self.v_applied[j]) +
                                             g_node * (self.v_applied[j + 1] - self.v_applied[j]))
             else:
-                spatial_neuron[j].i_appl = g_internode * (self.v_applied[j - 1] - 2 * self.v_applied[j])
+                spatial_neuron[j].i_appl = g_internode * (self.v_applied[j - 1] - 2 * self.v_applied[j] +
+                                                         self.v_applied[j + 1])
