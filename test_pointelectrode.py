@@ -9,7 +9,6 @@ def sine_elect() -> PointElectrode:
     return PointElectrode(current_amp=-11 * uA, frequency=200 * Hz, rx=1000 * um, ry=1000 * um, rz=500 * um,
                           sigma_ex=0.2 * siemens / meter)
 
-
 @pytest.fixture
 def pulse_elect() -> PointElectrode:
     return PointElectrode(current_amp=-11 * uA, rx=-1000 * umeter, ry=1000 * umeter, rz=-500 * umeter,
