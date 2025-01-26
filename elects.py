@@ -89,18 +89,16 @@ class PointElectrode:
                 v_applied[j] = self.v_waveform(defaultclock.dt)
         return v_applied
 
-    def v_applied_spatial(self, node_length, paranode_length, internode_length, morphology):
+    def v_applied_spatial(self):
         self.v_applied = {}
-        if self.origin < morphology.total_compartments:
-            self.v_applied = self.v_morpho(node_length, paranode_length, internode_length, -1, -1, morphology)
-            v_applied_compartment1 = self.v_morpho(node_length, paranode_length, internode_length,
-                                                   morphology.total_compartments, 1, morphology)
+        if self.origin < self.morphology.total_compartments:
+            self.v_applied = self.v_morpho(-1, -1)
+            v_applied_compartment1 = self.v_morpho(self.morphology.total_compartments, 1)
             self.v_applied.update(v_applied_compartment1)
         elif self.origin == 0:
-            self.v_applied = self.v_morpho(node_length, paranode_length, internode_length,
-                                           morphology.total_compartments, 1, morphology)
+            self.v_applied = self.v_morpho(self.morphology.total_compartments, 1)
         else:
-            self.v_applied = self.v_morpho(node_length, paranode_length, internode_length, -1, -1, morphology)
+            self.v_applied = self.v_morpho(-1, -1)
         return self.v_applied
 
     def i_applied_spatial(self, node_length, paranode_length, internode_length, node_diam, paranode_diam, internode_diam
