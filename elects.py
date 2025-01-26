@@ -5,10 +5,12 @@ from scipy.signal import square
 
 
 class PointElectrode:
-    def __init__(self, current_amp, rx, ry, rz, sigma_ex, origin=None, morphology=None, frequency=None,
-                 pulse_width=None, sine_wave=True, duty_cycle=None, node_length=None, internode_length=None,
-                 paranode_length=None):
+    def __init__(self, current_amp, rx, ry, rz, sigma_ex, frequency=None, pulse_width=None, sine_wave=True,
+                 duty_cycle=None, morphology=None, neuron_eqs=None, origin=None, node_length=None, internode_length=None
+                 , paranode_length=None, node_diam=None, internode_diam=None, paranode_diam=None, axial_rho=None):
+
         self.v_applied, self.elect_dist, self.apply_mem_voltage = None, None, None
+
         if morphology is None:
             self.dictionary_of_lengths = None
         else:
@@ -26,8 +28,27 @@ class PointElectrode:
                     self.dictionary_of_lengths[j] = paranode_length
                 else:
                     self.dictionary_of_lengths[j] = internode_length
-        self.rx, self.ry, self.rz, self.origin, self.morphology = rx, ry, rz, origin, morphology
+
+        self.g_node = ((np.pi / 4) * (node_diam ** 2)) / (node_length * axial_rho)
+        self.g_paranode = ((np.pi / 4) * (paranode_diam ** 2)) / (paranode_length * axial_rho)
+        self.g_internode = ((np.pi / 4) * (internode_diam ** 2)) / (internode_length * axial_rho)
+
+        self.g_node_to_paranode = (self.g_node + self.g_paranode) * 0.5
+        self.g_paranode_to_internode = (self.g_internode + self.g_paranode) * 0.5
+
+        self.rx, self.ry, self.rz, self.origin, self.morphology, self.neuron_eqs = (rx, ry, rz, origin, morphology,
+                                                                                    neuron_eqs)
+        eqs_list = neuron_eqs.splitlines()
+        for i in range(len(eqs_list)):
+            if eqs_list[i].endswith("(point current)"):
+                app_line = eqs_list[i]
+                if not app_line.startswith("i_applied"):
+                    raise ValueError("The point current must be called i_applied")
+            else:
+                pass
+
         self.current_amp, self.sigma_ex, self.sine_wave = current_amp, sigma_ex, sine_wave
+
         if sigma_ex <= 0:
             raise ValueError("Conductivity values should be greater than zero")
         if self.sine_wave:
@@ -101,43 +122,32 @@ class PointElectrode:
             self.v_applied = self.v_morpho(-1, -1)
         return self.v_applied
 
-    def i_applied_spatial(self, node_length, paranode_length, internode_length, node_diam, paranode_diam, internode_diam
-                          , axial_rho, morphology, eqs, spatial_neuron):
-        self.v_applied = self.v_applied_spatial(node_length, paranode_length, internode_length, morphology)
+    def i_applied_spatial(self, spatial_neuron):
 
-        g_node = ((np.pi / 4) * (node_diam ** 2)) / (node_length * axial_rho)
-        g_paranode = ((np.pi / 4) * (paranode_diam ** 2)) / (paranode_length * axial_rho)
-        g_internode = ((np.pi / 4) * (internode_diam ** 2)) / (internode_length * axial_rho)
+        self.v_applied = self.v_applied_spatial()
 
-        g_node_to_paranode = (g_node + g_paranode) * 0.5
-        g_paranode_to_internode = (g_internode + g_paranode) * 0.5
-
-        eqs_list = eqs.splitlines()
-        for i in range(len(eqs_list)):
-            if eqs_list[i].endswith("(point current)"):
-                app_line = eqs_list[i]
-                if not app_line.startswith("i_applied"):
-                    raise ValueError("The point current must be called i_applied")
-            else:
-                pass
-
-        for j in np.arange(0, morphology.total_compartments, 1):
+        for j in np.arange(0, self.morphology.total_compartments, 1):
             if j % 4 == 0:
                 if j == 0:
-                    spatial_neuron[j].i_applied = g_node_to_paranode * (-2 * self.v_applied[j] + self.v_applied[j + 1])
-                elif j == morphology.total_compartments - 1:
-                    spatial_neuron[j].i_applied = g_node_to_paranode * (self.v_applied[j - 1] - 2 * self.v_applied[j])
+                    spatial_neuron[j].i_applied = self.g_node_to_paranode * (-2 * self.v_applied[j] +
+                                                                             self.v_applied[j + 1])
+                elif j == self.morphology.total_compartments - 1:
+                    spatial_neuron[j].i_applied = self.g_node_to_paranode * (self.v_applied[j - 1] - 2 *
+                                                                             self.v_applied[j])
                 else:
-                    spatial_neuron[j].i_applied = g_node_to_paranode * (self.v_applied[j - 1] - 2 * self.v_applied[j] +
-                                                                        self.v_applied[j + 1])
+                    spatial_neuron[j].i_applied = self.g_node_to_paranode * (self.v_applied[j - 1] - 2 *
+                                                                             self.v_applied[j] +
+                                                                             self.v_applied[j + 1])
             # Right paranode
             elif j % 4 == 1 and j % 2 == 1:
-                spatial_neuron[j].i_applied = (g_node_to_paranode * (self.v_applied[j - 1] - self.v_applied[j]) +
-                                            g_paranode_to_internode * (self.v_applied[j + 1] - self.v_applied[j]))
+                spatial_neuron[j].i_applied = (self.g_node_to_paranode * (self.v_applied[j - 1] - self.v_applied[j]) +
+                                            self.g_paranode_to_internode * (self.v_applied[j + 1] - self.v_applied[j]))
             # Left paranode
             elif j % 4 != 1 and j % 2 == 1:
-                spatial_neuron[j].i_applied = (g_paranode_to_internode * (self.v_applied[j - 1] - self.v_applied[j]) +
-                                               g_node_to_paranode * (self.v_applied[j + 1] - self.v_applied[j]))
+                spatial_neuron[j].i_applied = (self.g_paranode_to_internode * (self.v_applied[j - 1] -
+                                                                               self.v_applied[j]) +
+                                               self.g_node_to_paranode * (self.v_applied[j + 1] - self.v_applied[j]))
             else:
-                spatial_neuron[j].i_applied = g_paranode_to_internode * (self.v_applied[j - 1] - 2 * self.v_applied[j] +
-                                                                         self.v_applied[j + 1])
+                spatial_neuron[j].i_applied = self.g_paranode_to_internode * (self.v_applied[j - 1] -
+                                                                              2 * self.v_applied[j] +
+                                                                              self.v_applied[j + 1])
