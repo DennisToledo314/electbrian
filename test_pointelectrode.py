@@ -198,7 +198,7 @@ def test_i_applied_spatial() -> None:
 
     defaultclock.dt = 0.005 * ms
     elect.i_applied_spatial(node_length, paranode_length, internode_length, node_diam, paranode_diam, internode_diam,
-                            axial_rho, my_morpho, myelinated)
+                            axial_rho, my_morpho, eqs, myelinated)
     run(10 * ms, report='text')
     assert abs(myelinated.i_appl[0]) == abs(myelinated.i_appl[12])
     assert abs(myelinated.i_appl[5]) == abs(myelinated.i_appl[7])
