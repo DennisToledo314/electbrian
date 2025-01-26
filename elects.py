@@ -26,7 +26,7 @@ class PointElectrode:
                     self.dictionary_of_lengths[j] = paranode_length
                 else:
                     self.dictionary_of_lengths[j] = internode_length
-        self.rx, self.ry, self.rz, self.origin, = rx, ry, rz, origin
+        self.rx, self.ry, self.rz, self.origin, self.morphology = rx, ry, rz, origin, morphology
         self.current_amp, self.sigma_ex, self.sine_wave = current_amp, sigma_ex, sine_wave
         if sigma_ex <= 0:
             raise ValueError("Conductivity values should be greater than zero")
@@ -56,36 +56,36 @@ class PointElectrode:
                                                                                       self.sigma_ex))
         return self.apply_mem_voltage
 
-    def origin_to_mid(self, change, target_comp, target_len, morphology):
-        if target_comp > morphology.total_compartments - 1 or target_comp < 0:
+    def origin_to_mid(self, change, target_comp):
+        if target_comp > self.morphology.total_compartments - 1 or target_comp < 0:
             raise ValueError ("The selected compartment is not in the morphology")
         if change > 1 or change < -1:
             raise ValueError("The only allowable values are 1 or -1")
         k, or_distance = self.origin, 0 * umeter
-        while 1 <= k < morphology.total_compartments - 1:
+        while 1 <= k < self.morphology.total_compartments - 1:
             or_distance = or_distance + 0.5 * (self.dictionary_of_lengths[k] + self.dictionary_of_lengths[k + change])
             k = k + change
-            if self.dictionary_of_lengths[k] == target_len and k == target_comp:
+            if k == target_comp:
                 break
         self.ry = or_distance
         return self.ry
 
-    def v_morpho(self, end, change, morphology):
+    def v_morpho(self, end, change):
         v_applied = {}
         self.ry = 0 * meter
         v_applied[self.origin] = self.v_waveform(defaultclock.dt)
         for j in np.arange(self.origin + change, end, change):
             if j % 4 == 0:
-                self.ry = self.origin_to_mid(change, j, self.dictionary_of_lengths[j], morphology)
+                self.ry = self.origin_to_mid(change, j)
                 v_applied[j] = self.v_waveform(defaultclock.dt)
             elif j % 4 == 1 and j % 2 == 1:
-                self.ry = self.origin_to_mid(change, j, self.dictionary_of_lengths[j], morphology)
+                self.ry = self.origin_to_mid(change, j)
                 v_applied[j] = self.v_waveform(defaultclock.dt)
             elif j % 4 != 1 and j % 2 == 1:
-                self.ry = self.origin_to_mid(change, j, self.dictionary_of_lengths[j], morphology)
+                self.ry = self.origin_to_mid(change, j)
                 v_applied[j] = self.v_waveform(defaultclock.dt)
             else:
-                self.ry = self.origin_to_mid(change, j, self.dictionary_of_lengths[j], morphology)
+                self.ry = self.origin_to_mid(change, j)
                 v_applied[j] = self.v_waveform(defaultclock.dt)
         return v_applied
 
