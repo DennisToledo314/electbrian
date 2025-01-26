@@ -122,9 +122,8 @@ def test_origin_to_mid(elect_for_testing: PointElectrode, axon_morpho: Morpholog
 
 
 def test_v_morpho(elect_for_testing: PointElectrode, axon_morpho: Morphology) -> None:
-    internode_length, paranode_length, node_length = 110 * um, 3 * um, 1 * um
-    v_actual1 = elect_for_testing.v_morpho(node_length, paranode_length, internode_length, -1, -1, axon_morpho)
-    v_actual2 = elect_for_testing.v_morpho(node_length, paranode_length, internode_length, 5, 1, axon_morpho)
+    v_actual1 = elect_for_testing.v_morpho(end = -1, change = -1, morphology = axon_morpho)
+    v_actual2 = elect_for_testing.v_morpho(end = 5, change = 1, morphology = axon_morpho)
     v_actual = {**v_actual1, **v_actual2}
     assert v_actual[1] == v_actual[3]
     assert v_actual[0] == v_actual[4]

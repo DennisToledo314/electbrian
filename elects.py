@@ -70,22 +70,22 @@ class PointElectrode:
         self.ry = or_distance
         return self.ry
 
-    def v_morpho(self, node_length, paranode_length, internode_length, end, change, morphology):
+    def v_morpho(self, end, change, morphology):
         v_applied = {}
         self.ry = 0 * meter
         v_applied[self.origin] = self.v_waveform(defaultclock.dt)
         for j in np.arange(self.origin + change, end, change):
             if j % 4 == 0:
-                self.ry = self.origin_to_mid(change, j, node_length, morphology)
+                self.ry = self.origin_to_mid(change, j, self.dictionary_of_lengths[j], morphology)
                 v_applied[j] = self.v_waveform(defaultclock.dt)
             elif j % 4 == 1 and j % 2 == 1:
-                self.ry = self.origin_to_mid(change, j, paranode_length, morphology)
+                self.ry = self.origin_to_mid(change, j, self.dictionary_of_lengths[j], morphology)
                 v_applied[j] = self.v_waveform(defaultclock.dt)
             elif j % 4 != 1 and j % 2 == 1:
-                self.ry = self.origin_to_mid(change, j, paranode_length, morphology)
+                self.ry = self.origin_to_mid(change, j, self.dictionary_of_lengths[j], morphology)
                 v_applied[j] = self.v_waveform(defaultclock.dt)
             else:
-                self.ry = self.origin_to_mid(change, j, internode_length, morphology)
+                self.ry = self.origin_to_mid(change, j, self.dictionary_of_lengths[j], morphology)
                 v_applied[j] = self.v_waveform(defaultclock.dt)
         return v_applied
 
