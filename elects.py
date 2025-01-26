@@ -38,14 +38,15 @@ class PointElectrode:
 
         self.rx, self.ry, self.rz, self.origin, self.morphology, self.neuron_eqs = (rx, ry, rz, origin, morphology,
                                                                                     neuron_eqs)
-        eqs_list = neuron_eqs.splitlines()
-        for i in range(len(eqs_list)):
-            if eqs_list[i].endswith("(point current)"):
-                app_line = eqs_list[i]
-                if not app_line.startswith("i_applied"):
-                    raise ValueError("The point current must be called i_applied")
-            else:
-                pass
+        if self.neuron_eqs is not None:
+            eqs_list = self.neuron_eqs.splitlines()
+            for i in range(len(eqs_list)):
+                if eqs_list[i].endswith("(point current) /n"):
+                    app_line = eqs_list[i]
+                    if not app_line.startswith("i_applied"):
+                        raise ValueError("The point current must be called i_applied")
+                else:
+                    pass
 
         self.current_amp, self.sigma_ex, self.sine_wave = current_amp, sigma_ex, sine_wave
 

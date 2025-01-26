@@ -172,7 +172,7 @@ def test_i_applied_spatial() -> None:
         gL : siemens/meter**2
         
         Im = gL * (EL-v) : amp/meter**2
-        i_appl : amp (point current)
+        i_applied : amp (point current)
         '''
     const_potentials = {'EL': leak_potential, 'ER': rest_potential}
     myelinated = SpatialNeuron(morphology=my_morpho, model=eqs, Cm=membrane_c, Ri=axial_rho,
@@ -193,19 +193,20 @@ def test_i_applied_spatial() -> None:
     myelinated.p1.i1.p2.n2.p3.i2.p4.n3.p5.i3.p6.n4.gL = g_l_node
 
     elect = PointElectrode(current_amp=-11 * uA, frequency=200 * Hz, rx=1000 * um, ry=1000 * um, rz=500 * um,
-                           sigma_ex=0.2 * siemens / meter, origin=6, morphology=my_morpho, node_length=1 * um,
-                           internode_length=110 * um, paranode_length=3 * um)
+                           sigma_ex=0.2 * siemens / meter, morphology=my_morpho, neuron_eqs=eqs, origin=6,
+                           node_length=node_length, internode_length=internode_length, paranode_length=paranode_length,
+                           node_diam=node_diam, internode_diam=internode_diam, paranode_diam=paranode_diam,
+                           axial_rho=axial_rho)
 
     defaultclock.dt = 0.005 * ms
-    elect.i_applied_spatial(node_length, paranode_length, internode_length, node_diam, paranode_diam, internode_diam,
-                            axial_rho, my_morpho, eqs, myelinated)
+    elect.i_applied_spatial(myelinated)
     run(10 * ms, report='text')
-    assert abs(myelinated.i_appl[0]) == abs(myelinated.i_appl[12])
-    assert abs(myelinated.i_appl[5]) == abs(myelinated.i_appl[7])
-    assert abs(myelinated.i_appl[3]) == abs(myelinated.i_appl[9])
-    assert abs(myelinated.i_appl[1]) == abs(myelinated.i_appl[11])
-    assert myelinated.i_appl[4] == myelinated.i_appl[8]
-    assert myelinated.i_appl[2] == myelinated.i_appl[10]
+    assert abs(myelinated.i_applied[0]) == abs(myelinated.i_applied[12])
+    assert abs(myelinated.i_applied[5]) == abs(myelinated.i_applied[7])
+    assert abs(myelinated.i_applied[3]) == abs(myelinated.i_applied[9])
+    assert abs(myelinated.i_applied[1]) == abs(myelinated.i_applied[11])
+    assert myelinated.i_applied[4] == myelinated.i_applied[8]
+    assert myelinated.i_applied[2] == myelinated.i_applied[10]
 
 
 
