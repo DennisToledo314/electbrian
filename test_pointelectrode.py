@@ -18,7 +18,8 @@ def pulse_elect() -> PointElectrode:
 def elect_for_testing (axon_morpho: Morphology) -> PointElectrode:
     return PointElectrode(current_amp=-11 * uA, frequency=200 * Hz, rx=1000 * um, ry=1000 * um, rz=500 * um,
                           sigma_ex=0.2 * siemens / meter, origin=2, morphology=axon_morpho, node_length=1 * um,
-                          internode_length=110 * um, paranode_length=3 * um)
+                          internode_length=110 * um, paranode_length=3 * um, node_diam = 2 * um, internode_diam=1.4 * um,
+                          paranode_diam=1.4 * um, axial_rho=70 * ohm * cm)
 
 @pytest.fixture
 def axon_morpho() -> Morphology:
@@ -47,31 +48,48 @@ def test_init_exceptions(axon_morpho) -> None:
     with pytest.raises(TypeError):
         PointElectrode(current_amp=-11 * uA, frequency=200 * Hz, rx=1000 * um, ry=1000 * um, rz=500 * um,
                        sigma_ex=0.2 * siemens / meter, origin=1, morphology=axon_morpho, node_length=1 * um,
-                       internode_length=110 * um, paranode_length=None)
+                       internode_length=110 * um, paranode_length=None, node_diam = 2 * um, internode_diam=1.4 * um,
+                       paranode_diam=1.4 * um, axial_rho=70 * ohm * cm)
     with pytest.raises(TypeError):
         PointElectrode(current_amp=-11 * uA, rx=-1000 * umeter, ry=1000 * umeter, rz=-500 * umeter,
                        pulse_width=0.3 * ms, sine_wave=False, sigma_ex=0.2 * siemens / meter, duty_cycle=0.5,
                        origin=1, morphology=axon_morpho, node_length=1 * um, internode_length=110 * um,
-                       paranode_length=None)
+                       paranode_length=None, node_diam = 2 * um, internode_diam=1.4 * um, paranode_diam=1.4 * um,
+                       axial_rho=70 * ohm * cm)
     with pytest.raises(ValueError):
         PointElectrode(current_amp=-11 * uA, frequency=200 * Hz, rx=1000 * um, ry=1000 * um, rz=500 * um,
                        sigma_ex=0.2 * siemens / meter, origin=6, morphology=axon_morpho, node_length=1 * um,
-                       internode_length=110 * um, paranode_length=3 * um)
+                       internode_length=110 * um, paranode_length=3 * um, node_diam = 2 * um, internode_diam=1.4 * um,
+                       paranode_diam=1.4 * um, axial_rho=70 * ohm * cm)
     with pytest.raises(ValueError):
         PointElectrode(current_amp=-11 * uA, rx=-1000 * umeter, ry=1000 * umeter, rz=-500 * umeter,
                        pulse_width=0.3 * ms, sine_wave=False, sigma_ex=0.2 * siemens / meter, duty_cycle=0.5,
                        origin=6, morphology=axon_morpho, node_length=1 * um, internode_length=110 * um,
-                       paranode_length=3 * um)
+                       paranode_length=3 * um, node_diam = 2 * um, internode_diam=1.4 * um, paranode_diam=1.4 * um,
+                       axial_rho=70 * ohm * cm)
     with pytest.raises(ValueError):
         PointElectrode(current_amp=-11 * uA, rx=-1000 * umeter, ry=1000 * umeter, rz=-500 * umeter,
                        pulse_width=0.3 * ms, sine_wave=False, sigma_ex=0.2 * siemens / meter, duty_cycle=-0.5,
                        origin=1, morphology=axon_morpho, node_length=1 * um, internode_length=110 * um,
-                       paranode_length=3 * um)
+                       paranode_length=3 * um, node_diam = 2 * um, internode_diam=1.4 * um, paranode_diam=1.4 * um,
+                       axial_rho=70 * ohm * cm)
     with pytest.raises(ValueError):
         PointElectrode(current_amp=-11 * uA, rx=-1000 * umeter, ry=1000 * umeter, rz=-500 * umeter,
                        pulse_width=0.3 * ms, sine_wave=False, sigma_ex=0.2 * siemens / meter, duty_cycle=2,
                        origin=1, morphology=axon_morpho, node_length=1 * um, internode_length=110 * um,
-                       paranode_length=3 * um)
+                       paranode_length=3 * um, node_diam = 2 * um, internode_diam=1.4 * um, paranode_diam=1.4 * um,
+                       axial_rho=70 * ohm * cm)
+    eqs = '''
+            gL : siemens/meter**2
+
+            Im = gL * (EL-v) : amp/meter**2
+            i_appl : amp (point current)
+            '''
+    with pytest.raises(ValueError):
+        PointElectrode(current_amp=-11 * uA, frequency=200 * Hz, rx=1000 * um, ry=1000 * um, rz=500 * um,
+                       sigma_ex=0.2 * siemens / meter, origin=1, morphology=axon_morpho, neuron_eqs=eqs,
+                       node_length=1 * um, internode_length=110 * um, paranode_length=3 * um, node_diam = 2 * um,
+                       internode_diam=1.4 * um, paranode_diam=1.4 * um)
 
 def test_elect_mem_distance(sine_elect: PointElectrode, pulse_elect: PointElectrode) -> None:
     assert sine_elect.elect_mem_dist() == 1500 * umeter
