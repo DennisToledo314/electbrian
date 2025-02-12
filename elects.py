@@ -93,18 +93,8 @@ class PointElectrode:
         self.ry = 0 * meter
         v_applied[self.origin] = self.v_waveform(defaultclock.dt)
         for j in np.arange(self.origin + change, end, change):
-            if j % 4 == 0:
-                self.ry = self.origin_to_mid(change, j)
-                v_applied[j] = self.v_waveform(defaultclock.dt)
-            elif j % 4 == 1 and j % 2 == 1:
-                self.ry = self.origin_to_mid(change, j)
-                v_applied[j] = self.v_waveform(defaultclock.dt)
-            elif j % 4 != 1 and j % 2 == 1:
-                self.ry = self.origin_to_mid(change, j)
-                v_applied[j] = self.v_waveform(defaultclock.dt)
-            else:
-                self.ry = self.origin_to_mid(change, j)
-                v_applied[j] = self.v_waveform(defaultclock.dt)
+            self.ry = self.origin_to_mid(change, j)
+            v_applied[j] = self.v_waveform(defaultclock.dt)
         return v_applied
 
     def v_applied_spatial(self):
