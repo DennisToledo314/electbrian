@@ -22,9 +22,7 @@ class PointElectrode:
             for j in np.arange(0, morphology.total_compartments, 1):
                 if j % 4 == 0:
                     self.dictionary_of_lengths[j] = node_length
-                elif j % 4 == 1 and j % 2 == 1:
-                    self.dictionary_of_lengths[j] = paranode_length
-                elif j % 4 != 1 and j % 2 == 1:
+                elif j % 2 == 1:
                     self.dictionary_of_lengths[j] = paranode_length
                 else:
                     self.dictionary_of_lengths[j] = internode_length
