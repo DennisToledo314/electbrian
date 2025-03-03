@@ -3,6 +3,8 @@ from brian2 import defaultclock
 from brian2.units.allunits import meter, umeter
 from scipy.signal import square
 
+# Separate out current_amp, frequency, pulse_width, sine_wave, duty_cycle into its own class
+# That class will likely be CurrentWave, and another class will be MENPWave
 
 class PointElectrode:
     def __init__(self, current_amp, rx, ry, rz, sigma_ex, frequency=None, pulse_width=None, sine_wave=True,
