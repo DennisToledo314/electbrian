@@ -3,10 +3,52 @@ from brian2 import defaultclock
 from brian2.units.allunits import meter, umeter
 from scipy.signal import square
 
-# Separate out current_amp, frequency, pulse_width, sine_wave, duty_cycle into its own class
-# That class will likely be CurrentWave, and another class will be MENPWave
-
 class PointElectrode:
+    """
+    Implements the point electrode approximation for neural electrodes.
+    Parameters
+    ----------
+    current_amp : 'Quantity'
+        The amplitude of the current applied to the electrode
+    rx : 'Quantity'
+        x component of displacement between the electrode and the neuron
+    ry : 'Quantity'
+        y component of displacement between the electrode and the neuron
+    rz : 'Quantity'
+        z component of displacement between the electrode and the neuron
+    sigma_ex: 'Quantity'
+        The conductivity of the extracellular media (surrounding the electrode)
+    frequency: 'Quantity', optional
+        The frequency of the applied current signal
+    pulse_width: 'Quantity', optional
+        The pulse width of the applied current signal
+    sine_wave: boolean
+        If true then the current takes the form of a sine wave with a frequency.
+        If false then the current takes the form of a square wave with a pulse width.
+    duty_cycle: between 0 and 1
+        Refers to the time length of the square pulses
+    morphology: "Morphology"
+        The morphology of the neuron.
+    neuron_eqs: 'Equations'
+        The equations defining the ion channels of the neuron (SpatialNeuron equations)
+    origin: 'Quantity'
+        The location (compartment number in the morphology) to which the electrode is closest.
+    node_length: 'Quantity'
+        The length of the nodes in the morphology
+    internode_length: 'Quantity'
+        The length of the internodes in the morphology
+    paranode_length: 'Quantity'
+        The length of the paranodes in the morphology
+    node_diam: 'Quantity'
+        The diameter of the nodes in the morphology
+    internode_diam: 'Quantity'
+        The diameter of the internodes in the morphology
+    paranode_diam: 'Quantity'
+        The diameter of the paranodes in the morphology
+    axial_rho: 'Quantity'
+        The resistivity of the neuron morphology
+
+    """
     def __init__(self, current_amp, rx, ry, rz, sigma_ex, frequency=None, pulse_width=None, sine_wave=True,
                  duty_cycle=None, morphology=None, neuron_eqs=None, origin=None, node_length=None, internode_length=None
                  , paranode_length=None, node_diam=None, internode_diam=None, paranode_diam=None, axial_rho=None):
