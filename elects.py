@@ -25,9 +25,9 @@ class PointElectrode:
     sine_wave: boolean
         If true then the current takes the form of a sine wave with a frequency.
         If false then the current takes the form of a square wave with a pulse width.
-    duty_cycle: between 0 and 1
+    duty_cycle: between 0 and 1, optional
         Refers to the time length of the square pulses
-    morphology: "Morphology"
+    morphology: 'Morphology'
         The morphology of the neuron.
     neuron_eqs: 'Equations'
         The equations defining the ion channels of the neuron (SpatialNeuron equations)
