@@ -1,5 +1,5 @@
 import pytest
-from src.elects import PointElectrode
+from src.electbrian.elects import PointElectrode
 import brian2.numpy_ as np
 from brian2 import SpatialNeuron, Morphology, Cylinder, defaultclock, run
 from brian2.units.allunits import uampere, hertz, umeter, siemens, meter, msecond, ohm, cmeter, second, mvolt, ufarad
