@@ -1,30 +1,34 @@
 import pytest
 from elects import PointElectrode
-from brian2 import *
+import brian2.numpy_ as np
+from brian2 import SpatialNeuron, Morphology, Cylinder, defaultclock, run
+from brian2.units.allunits import uampere, hertz, umeter, siemens, meter, msecond, ohm, cmeter, second, mvolt, ufarad
 from numpy.testing import assert_array_equal, assert_allclose
 from scipy.signal import square
 
 @pytest.fixture
 def sine_elect() -> PointElectrode:
-    return PointElectrode(current_amp=-11 * uA, frequency=200 * Hz, rx=1000 * um, ry=1000 * um, rz=500 * um,
-                          sigma_ex=0.2 * siemens / meter)
+    return PointElectrode(current_amp=-11 * uampere, frequency=200 * hertz, rx=1000 * umeter, ry=1000 * umeter,
+                          rz=500 * umeter, sigma_ex=0.2 * siemens / meter)
 
 @pytest.fixture
 def pulse_elect() -> PointElectrode:
-    return PointElectrode(current_amp=-11 * uA, rx=-1000 * umeter, ry=1000 * umeter, rz=-500 * umeter,
-                          pulse_width=0.3 * ms, sine_wave=False, sigma_ex=0.2 * siemens / meter, duty_cycle=0.5)
+    return PointElectrode(current_amp=-11 * uampere, rx=-1000 * umeter, ry=1000 * umeter, rz=-500 * umeter,
+                          pulse_width=0.3 * msecond, sine_wave=False, sigma_ex=0.2 * siemens / meter, duty_cycle=0.5)
 
 @pytest.fixture
 def elect_for_testing (axon_morpho: Morphology) -> PointElectrode:
-    return PointElectrode(current_amp=-11 * uA, frequency=200 * Hz, rx=1000 * um, ry=1000 * um, rz=500 * um,
-                          sigma_ex=0.2 * siemens / meter, origin=2, morphology=axon_morpho, node_length=1 * um,
-                          internode_length=110 * um, paranode_length=3 * um, node_diam = 2 * um, internode_diam=1.4 * um,
-                          paranode_diam=1.4 * um, axial_rho=70 * ohm * cm)
+    return PointElectrode(current_amp=-11 * uampere, frequency=200 * hertz, rx=1000 * umeter, ry=1000 * umeter,
+                          rz=500 * umeter,
+                          sigma_ex=0.2 * siemens / meter, origin=2, morphology=axon_morpho, node_length=1 * umeter,
+                          internode_length=110 * umeter, paranode_length=3 * umeter, node_diam = 2 * umeter,
+                          internode_diam=1.4 * umeter,
+                          paranode_diam=1.4 * umeter, axial_rho=70 * ohm * cmeter)
 
 @pytest.fixture
 def axon_morpho() -> Morphology:
-    internode_length, paranode_length, node_length = 110 * um, 3 * um, 1 * um
-    internode_diam, paranode_diam, node_diam = 2 * um, 1.4 * um, 1.4 * um
+    internode_length, paranode_length, node_length = 110 * umeter, 3 * umeter, 1 * umeter
+    internode_diam, paranode_diam, node_diam = 2 * umeter, 1.4 * umeter, 1.4 * umeter
 
     axon_morpho = Cylinder(diameter=node_diam, length=node_length)
     axon_morpho.p1 = Cylinder(diameter=paranode_diam, length=paranode_length)
@@ -36,49 +40,49 @@ def axon_morpho() -> Morphology:
 
 def test_init_exceptions(axon_morpho: Morphology) -> None:
     with pytest.raises(ValueError):
-        PointElectrode(current_amp=-11 * uA, frequency=0, rx=1000 * umeter,
+        PointElectrode(current_amp=-11 * uampere, frequency=0, rx=1000 * umeter,
                        ry=1000 * umeter, rz=500 * umeter, sigma_ex=0.2 * siemens / meter)
     with pytest.raises(ValueError):
-        PointElectrode(current_amp=-11 * uA, pulse_width=0, rx=1000 * umeter,
+        PointElectrode(current_amp=-11 * uampere, pulse_width=0, rx=1000 * umeter,
                        ry=1000 * umeter, rz=500 * umeter, sine_wave=False,
                        sigma_ex=0.2 * siemens / meter)
     with pytest.raises(ValueError):
-        PointElectrode(current_amp=-11 * uA, frequency=200 * Hz, rx=1000 * umeter,
+        PointElectrode(current_amp=-11 * uampere, frequency=200 * hertz, rx=1000 * umeter,
                        ry=1000 * umeter, rz=500 * umeter, sigma_ex=0 * siemens / meter)
     with pytest.raises(TypeError):
-        PointElectrode(current_amp=-11 * uA, frequency=200 * Hz, rx=1000 * um, ry=1000 * um, rz=500 * um,
-                       sigma_ex=0.2 * siemens / meter, origin=1, morphology=axon_morpho, node_length=1 * um,
-                       internode_length=110 * um, paranode_length=None, node_diam = 2 * um, internode_diam=1.4 * um,
-                       paranode_diam=1.4 * um, axial_rho=70 * ohm * cm)
+        PointElectrode(current_amp=-11 * uampere, frequency=200 * hertz, rx=1000 * umeter, ry=1000 * umeter, rz=500 * umeter,
+                       sigma_ex=0.2 * siemens / meter, origin=1, morphology=axon_morpho, node_length=1 * umeter,
+                       internode_length=110 * umeter, paranode_length=None, node_diam = 2 * umeter, internode_diam=1.4 * umeter,
+                       paranode_diam=1.4 * umeter, axial_rho=70 * ohm * cmeter)
     with pytest.raises(TypeError):
-        PointElectrode(current_amp=-11 * uA, rx=-1000 * umeter, ry=1000 * umeter, rz=-500 * umeter,
-                       pulse_width=0.3 * ms, sine_wave=False, sigma_ex=0.2 * siemens / meter, duty_cycle=0.5,
-                       origin=1, morphology=axon_morpho, node_length=1 * um, internode_length=110 * um,
-                       paranode_length=None, node_diam = 2 * um, internode_diam=1.4 * um, paranode_diam=1.4 * um,
-                       axial_rho=70 * ohm * cm)
+        PointElectrode(current_amp=-11 * uampere, rx=-1000 * umeter, ry=1000 * umeter, rz=-500 * umeter,
+                       pulse_width=0.3 * msecond, sine_wave=False, sigma_ex=0.2 * siemens / meter, duty_cycle=0.5,
+                       origin=1, morphology=axon_morpho, node_length=1 * umeter, internode_length=110 * umeter,
+                       paranode_length=None, node_diam = 2 * umeter, internode_diam=1.4 * umeter, paranode_diam=1.4 * umeter,
+                       axial_rho=70 * ohm * cmeter)
     with pytest.raises(ValueError):
-        PointElectrode(current_amp=-11 * uA, frequency=200 * Hz, rx=1000 * um, ry=1000 * um, rz=500 * um,
-                       sigma_ex=0.2 * siemens / meter, origin=6, morphology=axon_morpho, node_length=1 * um,
-                       internode_length=110 * um, paranode_length=3 * um, node_diam = 2 * um, internode_diam=1.4 * um,
-                       paranode_diam=1.4 * um, axial_rho=70 * ohm * cm)
+        PointElectrode(current_amp=-11 * uampere, frequency=200 * hertz, rx=1000 * umeter, ry=1000 * umeter, rz=500 * umeter,
+                       sigma_ex=0.2 * siemens / meter, origin=6, morphology=axon_morpho, node_length=1 * umeter,
+                       internode_length=110 * umeter, paranode_length=3 * umeter, node_diam = 2 * umeter, internode_diam=1.4 * umeter,
+                       paranode_diam=1.4 * umeter, axial_rho=70 * ohm * cmeter)
     with pytest.raises(ValueError):
-        PointElectrode(current_amp=-11 * uA, rx=-1000 * umeter, ry=1000 * umeter, rz=-500 * umeter,
-                       pulse_width=0.3 * ms, sine_wave=False, sigma_ex=0.2 * siemens / meter, duty_cycle=0.5,
-                       origin=6, morphology=axon_morpho, node_length=1 * um, internode_length=110 * um,
-                       paranode_length=3 * um, node_diam = 2 * um, internode_diam=1.4 * um, paranode_diam=1.4 * um,
-                       axial_rho=70 * ohm * cm)
+        PointElectrode(current_amp=-11 * uampere, rx=-1000 * umeter, ry=1000 * umeter, rz=-500 * umeter,
+                       pulse_width=0.3 * msecond, sine_wave=False, sigma_ex=0.2 * siemens / meter, duty_cycle=0.5,
+                       origin=6, morphology=axon_morpho, node_length=1 * umeter, internode_length=110 * umeter,
+                       paranode_length=3 * umeter, node_diam = 2 * umeter, internode_diam=1.4 * umeter, paranode_diam=1.4 * umeter,
+                       axial_rho=70 * ohm * cmeter)
     with pytest.raises(ValueError):
-        PointElectrode(current_amp=-11 * uA, rx=-1000 * umeter, ry=1000 * umeter, rz=-500 * umeter,
-                       pulse_width=0.3 * ms, sine_wave=False, sigma_ex=0.2 * siemens / meter, duty_cycle=-0.5,
-                       origin=1, morphology=axon_morpho, node_length=1 * um, internode_length=110 * um,
-                       paranode_length=3 * um, node_diam = 2 * um, internode_diam=1.4 * um, paranode_diam=1.4 * um,
-                       axial_rho=70 * ohm * cm)
+        PointElectrode(current_amp=-11 * uampere, rx=-1000 * umeter, ry=1000 * umeter, rz=-500 * umeter,
+                       pulse_width=0.3 * msecond, sine_wave=False, sigma_ex=0.2 * siemens / meter, duty_cycle=-0.5,
+                       origin=1, morphology=axon_morpho, node_length=1 * umeter, internode_length=110 * umeter,
+                       paranode_length=3 * umeter, node_diam = 2 * umeter, internode_diam=1.4 * umeter, paranode_diam=1.4 * umeter,
+                       axial_rho=70 * ohm * cmeter)
     with pytest.raises(ValueError):
-        PointElectrode(current_amp=-11 * uA, rx=-1000 * umeter, ry=1000 * umeter, rz=-500 * umeter,
-                       pulse_width=0.3 * ms, sine_wave=False, sigma_ex=0.2 * siemens / meter, duty_cycle=2,
-                       origin=1, morphology=axon_morpho, node_length=1 * um, internode_length=110 * um,
-                       paranode_length=3 * um, node_diam = 2 * um, internode_diam=1.4 * um, paranode_diam=1.4 * um,
-                       axial_rho=70 * ohm * cm)
+        PointElectrode(current_amp=-11 * uampere, rx=-1000 * umeter, ry=1000 * umeter, rz=-500 * umeter,
+                       pulse_width=0.3 * msecond, sine_wave=False, sigma_ex=0.2 * siemens / meter, duty_cycle=2,
+                       origin=1, morphology=axon_morpho, node_length=1 * umeter, internode_length=110 * umeter,
+                       paranode_length=3 * umeter, node_diam = 2 * umeter, internode_diam=1.4 * umeter, paranode_diam=1.4 * umeter,
+                       axial_rho=70 * ohm * cmeter)
     eqs = '''
             gL : siemens/meter**2
 
@@ -86,10 +90,10 @@ def test_init_exceptions(axon_morpho: Morphology) -> None:
             i_appl : amp (point current)
             '''
     with pytest.raises(ValueError):
-        PointElectrode(current_amp=-11 * uA, frequency=200 * Hz, rx=1000 * um, ry=1000 * um, rz=500 * um,
+        PointElectrode(current_amp=-11 * uampere, frequency=200 * hertz, rx=1000 * umeter, ry=1000 * umeter, rz=500 * umeter,
                        sigma_ex=0.2 * siemens / meter, origin=1, morphology=axon_morpho, neuron_eqs=eqs,
-                       node_length=1 * um, internode_length=110 * um, paranode_length=3 * um, node_diam = 2 * um,
-                       internode_diam=1.4 * um, paranode_diam=1.4 * um)
+                       node_length=1 * umeter, internode_length=110 * umeter, paranode_length=3 * umeter, node_diam = 2 * umeter,
+                       internode_diam=1.4 * umeter, paranode_diam=1.4 * umeter)
 
 def test_elect_mem_distance(sine_elect: PointElectrode, pulse_elect: PointElectrode) -> None:
     assert sine_elect.elect_mem_dist() == 1500 * umeter
@@ -100,7 +104,7 @@ def test_v_waveform(sine_elect: PointElectrode, pulse_elect: PointElectrode) -> 
     t = np.arange(0, 3.1e-3, 1e-4) * second
 
     sine_actual = sine_elect.v_waveform(t)
-    sine_desired = ((sine_elect.current_amp * sin(2 * np.pi * sine_elect.frequency * t)) /
+    sine_desired = ((sine_elect.current_amp * np.sin(2 * np.pi * sine_elect.frequency * t)) /
                     (4 * np.pi * sine_elect.elect_mem_dist() * sine_elect.sigma_ex))
 
     pulse_actual = pulse_elect.v_waveform(t)
@@ -113,7 +117,7 @@ def test_v_waveform(sine_elect: PointElectrode, pulse_elect: PointElectrode) -> 
 
 
 def test_origin_to_mid(elect_for_testing: PointElectrode) -> None:
-    internode_length, paranode_length, node_length = 110 * um, 3 * um, 1 * um
+    internode_length, paranode_length, node_length = 110 * umeter, 3 * umeter, 1 * umeter
 
     assert_allclose(elect_for_testing.origin_to_mid(-1, 1),
                     (0.5 * (paranode_length + internode_length)))
@@ -164,8 +168,8 @@ def test_v_applied_spatial(elect_for_testing: PointElectrode) -> None:
     assert v_test1[2] == v_test2[2]
 
 def test_i_applied_spatial() -> None:
-    internode_length, paranode_length, node_length = 110 * um, 3 * um, 1 * um
-    internode_diam, paranode_diam, node_diam = 2 * um, 1.4 * um, 1.4 * um
+    internode_length, paranode_length, node_length = 110 * umeter, 3 * umeter, 1 * umeter
+    internode_diam, paranode_diam, node_diam = 2 * umeter, 1.4 * umeter, 1.4 * umeter
 
     my_morpho = Cylinder(diameter=node_diam, length=node_length)
     my_morpho.p1 = Cylinder(diameter=paranode_diam, length=paranode_length)
@@ -181,10 +185,10 @@ def test_i_applied_spatial() -> None:
     my_morpho.p1.i1.p2.n2.p3.i2.p4.n3.p5.i3.p6 = Cylinder(diameter=paranode_diam, length=paranode_length)
     my_morpho.p1.i1.p2.n2.p3.i2.p4.n3.p5.i3.p6.n4 = Cylinder(diameter=node_diam, length=node_length)
 
-    leak_potential, rest_potential = -90 * mV, -90 * mV
-    g_l_node = 0.007 * siemens / cm ** 2
-    g_l_inter, inter_c, para_c = 0.7e-4 * siemens / cm ** 2, 1.6 * uF / cm ** 2, 1.6 * uF / cm ** 2
-    membrane_c, axial_rho = 2 * uF / cm ** 2, 70 * ohm * cm
+    leak_potential, rest_potential = -90 * mvolt, -90 * mvolt
+    g_l_node = 0.007 * siemens / cmeter ** 2
+    g_l_inter, inter_c, para_c = 0.7e-4 * siemens / cmeter ** 2, 1.6 * ufarad / cmeter ** 2, 1.6 * ufarad / cmeter ** 2
+    membrane_c, axial_rho = 2 * ufarad / cmeter ** 2, 70 * ohm * cmeter
 
     eqs = '''
         gL : siemens/meter**2
@@ -210,15 +214,15 @@ def test_i_applied_spatial() -> None:
     myelinated.p1.i1.p2.n2.p3.i2.p4.n3.p5.i3.p6.gL, myelinated.p1.i1.p2.n2.p3.i2.p4.n3.p5.i3.p6.Cm = g_l_inter, para_c
     myelinated.p1.i1.p2.n2.p3.i2.p4.n3.p5.i3.p6.n4.gL = g_l_node
 
-    elect = PointElectrode(current_amp=-11 * uA, frequency=200 * Hz, rx=1000 * um, ry=1000 * um, rz=500 * um,
+    elect = PointElectrode(current_amp=-11 * uampere, frequency=200 * hertz, rx=1000 * umeter, ry=1000 * umeter, rz=500 * umeter,
                            sigma_ex=0.2 * siemens / meter, morphology=my_morpho, neuron_eqs=eqs, origin=6,
                            node_length=node_length, internode_length=internode_length, paranode_length=paranode_length,
                            node_diam=node_diam, internode_diam=internode_diam, paranode_diam=paranode_diam,
                            axial_rho=axial_rho)
 
-    defaultclock.dt = 0.005 * ms
+    defaultclock.dt = 0.005 * msecond
     elect.i_applied_spatial(myelinated)
-    run(10 * ms, report='text')
+    run(10 * msecond, report='text')
     assert abs(myelinated.i_applied[0]) == abs(myelinated.i_applied[12])
     assert abs(myelinated.i_applied[5]) == abs(myelinated.i_applied[7])
     assert abs(myelinated.i_applied[3]) == abs(myelinated.i_applied[9])
