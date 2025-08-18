@@ -9,3 +9,6 @@ dynamic = ["dependencies"]
 
 [tool.setuptools.dynamic]
 dependencies = { file = ["requirements.txt"] }
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/electbrian"]
