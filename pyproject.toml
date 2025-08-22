@@ -24,7 +24,7 @@ license = "MIT"
 license-files = ["LICEN[CS]E*"]
 
 [tool.setuptools_scm]
-write_to = "_version.py"
+write_to = "src/_version.py"
 
 [tool.setuptools.packages.find]
 where = ["src/electbrian"]
