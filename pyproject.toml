@@ -1,19 +1,31 @@
 [build-system]
-requires = ["hatchling >= 1.26"]
-build-backend = "hatchling.build"
+requires = [
+    "setuptools >= 65",
+    "setuptools_scm[toml]",
+    "wheel",
+]
+build-backend = "setuptools.build_meta"
 
 [project]
 name = "electbrian"
-version = "0.2"
+dynamic = ["version"]
 authors = [
-  { name="Dennis Toledo", email="" },
+  { name="Dennis Toledo"},
 ]
 description = "Implements the point electrode approximation for electrodes"
 readme = "README.md"
 requires-python = ">=3.7"
-dependencies = ["Brian2","scipy"]
+dependencies = [
+    'importlib_metadata; python_version < "3.8"',
+    'Brian2',
+    'scipy'
+]
 license = "MIT"
 license-files = ["LICEN[CS]E*"]
 
-[tool.hatch.build.targets.wheel]
-packages = ["src/electbrian"]
+[tool.setuptools_scm]
+write_to = "_version.py"
+
+[tool.setuptools.packages.find]
+where = ["src/electbrian"]
+
