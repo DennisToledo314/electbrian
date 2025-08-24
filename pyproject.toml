@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "electbrian"
-version = "0.2.9"
+version = "0.3"
 authors = [
   { name="Dennis Toledo"},
 ]
@@ -14,6 +14,7 @@ requires-python = ">=3.7"
 dependencies = [
     "Brian2==2.9.0",
     "scipy==1.15.3",
+    "setuptools"
 ]
 license = "MIT"
 license-files = ["LICEN[CS]E*"]
