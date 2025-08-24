@@ -18,7 +18,9 @@ requires-python = ">=3.7"
 dependencies = [
     'importlib_metadata; python_version < "3.8"',
     'Brian2',
-    'scipy'
+    'scipy',
+    'setuptools>=65',
+    'wheel'
 ]
 license = "MIT"
 license-files = ["LICEN[CS]E*"]
