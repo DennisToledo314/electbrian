@@ -4,9 +4,9 @@ build-backend = "hatchling.build"
 
 [project]
 name = "electbrian"
-version = "0.2"
+version = "0.2.4"
 authors = [
-  { name="Dennis Toledo", email="" },
+  { name="Dennis Toledo"},
 ]
 description = "Implements the point electrode approximation for electrodes"
 readme = "README.md"
