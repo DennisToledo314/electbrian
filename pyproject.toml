@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "electbrian"
-version = "0.3.1"
+version = "0.3.2"
 authors = [
   { name="Dennis Toledo"},
 ]
@@ -12,12 +12,14 @@ description = "Implements the point electrode approximation for electrodes"
 readme = "README.md"
 requires-python = ">=3.7"
 dependencies = [
-    "setuptools",
-    "Brian2==2.9.0",
-    "scipy==1.15.3"
+    "Brian2",
+    "scipy"
 ]
 license = "MIT"
 license-files = ["LICEN[CS]E*"]
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/electbrian"]
+
+[tool.hatch.build.targets.electbrian]
+require-runtime-dependencies = true
