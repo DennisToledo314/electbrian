@@ -6,5 +6,5 @@ object from Brian 2.
 ## Requirements
 
 Python >=3.7
-Brian2
+Brian2  
 Scipy
