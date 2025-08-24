@@ -4,13 +4,17 @@ build-backend = "hatchling.build"
 
 [project]
 name = "electbrian"
-version = "0.2.6"
+version = "0.2.7"
 authors = [
   { name="Dennis Toledo"},
 ]
 description = "Implements the point electrode approximation for electrodes"
 readme = "README.md"
 requires-python = ">=3.7"
+dependencies = [
+    'scipy',
+    'brian2'
+]
 license = "MIT"
 license-files = ["LICEN[CS]E*"]
 
