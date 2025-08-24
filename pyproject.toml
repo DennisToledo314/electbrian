@@ -12,9 +12,9 @@ description = "Implements the point electrode approximation for electrodes"
 readme = "README.md"
 requires-python = ">=3.7"
 dependencies = [
-    "setuptools"
+    "setuptools",
     "Brian2==2.9.0",
-    "scipy==1.15.3",
+    "scipy==1.15.3"
 ]
 license = "MIT"
 license-files = ["LICEN[CS]E*"]
