@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "electbrian"
-version = "0.3.4"
+version = "0.3.5"
 authors = [
   { name="Dennis Toledo"},
 ]
@@ -13,6 +13,9 @@ readme = "README.md"
 requires-python = ">=3.7"
 license = "MIT"
 license-files = ["LICEN[CS]E*"]
+
+[project.urls]
+Repository = "https://github.com/DennisToledo314/electbrian/"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/electbrian"]
