@@ -17,4 +17,4 @@ or a miniconda installation (https://www.anaconda.com/docs/getting-started/minic
 
 ## Installation
 
-''pip install electbrian''
+``pip install electbrian``
