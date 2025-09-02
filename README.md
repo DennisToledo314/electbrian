@@ -5,21 +5,21 @@ object from Brian 2.
 
 ## Requirements
 
-It is recommended to install these requirements in a separate virtual environment using pip <br>
-See for example: https://code.visualstudio.com/docs/python/environments for VS Code <br>
-Or https://www.jetbrains.com/help/pycharm/creating-virtual-environment.html for PyCharm <br>
-<br>
+<p>It is recommended to install these requirements in a separate virtual environment using pip 
+See for example: https://code.visualstudio.com/docs/python/environments for VS Code 
+Or https://www.jetbrains.com/help/pycharm/creating-virtual-environment.html for PyCharm </p>
+
 **Python >=3.7**, Installation (https://www.python.org/downloads/) <br>
 <br>
-Although a pip based virtual environment is recommended, Python can also be obtained from an anaconda installation 
-or a miniconda installation (https://www.anaconda.com/docs/getting-started/miniconda/main) <br>
-<br>
+<p>Although a pip based virtual environment is recommended, Python can also be obtained from an anaconda installation 
+or a miniconda installation (https://www.anaconda.com/docs/getting-started/miniconda/main) </p>
+
 **Brian2**, Installation (https://brian2.readthedocs.io/en/stable/introduction/install.html#standard-install) <br>
 **Scipy**, Installation (https://scipy.org/install/) <br>
 
 ## Installation
-Just as it is recommended to install the above requirements in a separate virtual environment using pip, it is also
-recommended to install electbrian in that same virtual environment. <br>
-<br>
+<p>Just as it is recommended to install the above requirements in a separate virtual environment using pip, it is also
+recommended to install electbrian in that same virtual environment. </p>
+
 This can be done using the following command: <br>
 ``pip install electbrian`` <br>
