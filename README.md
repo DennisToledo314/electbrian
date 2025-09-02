@@ -1,5 +1,3 @@
-\usepackage{mathtools}
-
 # electbrian
 
 <p>Implements the point electrode approximation for neuromodulation using the Brian 2 package. Works with the 
