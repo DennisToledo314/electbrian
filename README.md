@@ -14,3 +14,7 @@ or a miniconda installation (https://www.anaconda.com/docs/getting-started/minic
 <br>
 **Brian2**, Installation (https://brian2.readthedocs.io/en/stable/introduction/install.html#standard-install) <br>
 **Scipy**, Installation (https://scipy.org/install/) <br>
+
+## Installation
+
+'''pip install electbrian '''
