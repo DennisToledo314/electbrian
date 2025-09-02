@@ -24,5 +24,5 @@ This can be done using the following command: <br>
 ``pip install electbrian`` <br>
 
 ## Theory
-**The point electrode approximation is defined as follows:**\
+<p>The point electrode approximation is defined as follows:</p>
 $$ \frac{I}{4\pi\sigma_ex\|r\|}$$
