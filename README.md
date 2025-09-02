@@ -25,4 +25,4 @@ This can be done using the following command: <br>
 
 ## Theory
 <p>The point electrode approximation is defined as follows:</p>
-$$ \frac{I}{4\pi\sigma_ex\|r\|}$$
+$$ \left(\frac{I}{4\pi\sigma_ex\|r\|}\right) $$
